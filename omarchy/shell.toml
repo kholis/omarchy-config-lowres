@@ -1,0 +1,8 @@
+[bar]
+# Managed by ~/.config/omarchy/hooks/theme-set.d/bar-text-color.sh
+# (re-derived on every theme change: #dfe4f8 for dark themes,
+#  foreground for light themes — safe to leave as-is)
+text = "#dfe4f8"
+
+[font]
+base-size = 12

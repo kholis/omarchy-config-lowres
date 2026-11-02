@@ -1,0 +1,79 @@
+/*
+ * https://github.com/ttys3/my-ghostty-config
+debug: env GTK_DEBUG=interactive ghostty
+https://docs.gtk.org/gtk4/css-overview.html
+https://docs.gtk.org/gtk4/css-properties.html
+
+ Tokyo Night palette:
+   bg #1a1b26  border #292e42  gutter #3b4261
+   fg #a9b1d6  bright fg #c0caf5
+*/
+
+headerbar {
+  min-height: 12px;
+  padding: 0;
+  margin: 0;
+  background: #1a1b26;
+}
+
+/* Unfocused-window variant (libadwaita repaints it with the
+   light backdrop headerbar color) */
+headerbar:backdrop {
+  background: #1a1b26;
+}
+
+/* The tab bar wraps the tabbox in a ".box" (plus start/end actions).
+   libadwaita paints these with the light headerbar background by
+   default -- that was the white strip at the left/right edges. */
+tabbar,
+tabbar .box,
+tabbar .box:backdrop,
+tabbar .start-action,
+tabbar .end-action {
+  background: #1a1b26;
+  box-shadow: none;
+}
+
+tabbar tabbox {
+  margin: 0;
+  padding: 0;
+  min-height: 6px;
+  background-color: #1a1b26;
+  font-family: monospace;
+}
+
+tabbar tabbox > tabboxchild {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+tabbar tabbox tab {
+  margin: 0;
+  padding: 0;
+  min-height: 18px;
+  color: #a9b1d6;
+  border-radius: 0;
+  border-right: 1px solid #292e42;
+}
+
+/* The per-tab close button also has a 24px minimum that forces tab height */
+tabbar tabbox tab button.image-button {
+  min-width: 16px;
+  min-height: 16px;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+}
+
+/* Active tab: Tokyo Night "gutter" gray, clearly lighter than the bar */
+tabbar tabbox tab:selected {
+  /* background-color: #3b4261;
+  color: #c0caf5; */
+  background-color: #aeaeae;
+  color: #000000;
+}
+
+tabbar tabbox tab label {
+  font-size: 12px;
+}

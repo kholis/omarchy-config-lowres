@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# screenshot — Omarchy screenshot with the low-contrast shader bypassed.
+#
+# Wraps /usr/bin/omarchy-capture-screenshot: sets `contrast off` while the
+# region picker + grim run, so the captured image keeps true colors, then
+# restores your previous contrast/tint. The screen briefly shows full
+# contrast while you pick a region — that's the un-dimmed image.
+#
+# Same args as the original: [smart|region|windows|fullscreen] [slurp|copy|save]
+
+set -uo pipefail
+
+REAL=/usr/bin/omarchy-capture-screenshot
+CONTRAST="$HOME/.local/bin/contrast"
+
+# Parse current settings, e.g. "contrast 0.85, tint 1.0, 0.98, 0.95"
+line="$($CONTRAST 2>/dev/null | tr -d ',')"
+read -r _ c _ tint <<<"$line"
+
+if [[ -z "$c" || ! "$c" =~ ^[01]\.?[0-9]*$ ]]; then
+    # No contrast shader active — run the tool untouched
+    exec "$REAL" "$@"
+fi
+
+restore() { $CONTRAST "$c" $tint >/dev/null 2>&1; }
+trap restore EXIT INT TERM
+
+$CONTRAST off >/dev/null
+sleep 0.3 # let Hyprland render a clean frame before the picker/grab
+
+"$REAL" "$@"

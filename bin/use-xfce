@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# use-xfce — make the next boot go to the XFCE desktop.
+#
+# Activates LightDM with the Xfce Session (X11) as the default + autologin.
+# SDDM and its Omarchy autologin are left untouched for `use-omarchy`.
+# Takes effect after reboot.
+set -euo pipefail
+[[ $EUID -eq 0 ]] || exec sudo bash "$0" "$@"
+USER_NAME="${SUDO_USER:-kh}"
+
+# 1. LightDM: session list (Xfce X11 + Omarchy) and GTK greeter
+install -d -m755 /etc/lightdm/lightdm.conf.d
+cat >/etc/lightdm/lightdm.conf.d/20-omarchy-sessions.conf <<'EOF'
+[LightDM]
+# Xfce Session (X11) + Omarchy (Hyprland via uwsm, native Wayland).
+# Entries found in */wayland-sessions directories are launched by LightDM
+# as native Wayland sessions on their own VT.
+sessions-directory=/usr/share/xsessions:/usr/share/omarchy/default/wayland-sessions
+
+[Seat:*]
+greeter-session=lightdm-gtk-greeter
+EOF
+
+# 2. Default session: Xfce (X11), straight autologin
+cat >/etc/lightdm/lightdm.conf.d/30-autologin-xfce.conf <<EOF
+[Seat:*]
+user-session=xfce
+autologin-user=$USER_NAME
+autologin-session=xfce
+autologin-user-timeout=0
+EOF
+
+# 3. Greeter appearance (Everforest / Omarchy look; original backed up once)
+G=/etc/lightdm/lightdm-gtk-greeter.conf
+[[ -e $G && ! -e ${G}.pre-lightdm-switch ]] && cp -a "$G" "${G}.pre-lightdm-switch"
+cat >"$G" <<'EOF'
+[greeter]
+background = /usr/share/omarchy/themes/everforest/backgrounds/1-tree-tops.jpg
+theme-name = Greybird
+icon-theme-name = elementary-xfce
+font-name = Noto Sans 10
+# ~session = the session picker in the greeter panel
+indicators = ~a11y;~session;~clock;~power
+EOF
+
+# 4. Arch's lightdm-autologin PAM requires membership in the "autologin" group
+groupadd -f autologin
+id -nG "$USER_NAME" | grep -qw autologin || usermod -aG autologin "$USER_NAME"
+
+# 5. Activate LightDM (the other DM keeps its own config for switching back)
+systemctl disable sddm.service >/dev/null 2>&1 || true
+systemctl enable lightdm.service >/dev/null
+
+echo "Next boot : LightDM -> Xfce Session (X11), autologin as $USER_NAME"
+echo "Enabled   : $(systemctl is-enabled lightdm.service)"
+echo "Switch back any time with: use-omarchy"
+read -r -p "Reboot now? [y/N] " ans || true
+if [[ "${ans:-}" =~ ^[Yy] ]]; then systemctl reboot; fi

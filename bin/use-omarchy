@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# use-omarchy — make the next boot go to the Omarchy (Hyprland) desktop.
+#
+# Reactivates SDDM with its existing Omarchy autologin (omarchy.desktop),
+# exactly the stock Omarchy behavior. LightDM keeps its Xfce config for
+# `use-xfce`. Takes effect after reboot.
+set -euo pipefail
+[[ $EUID -eq 0 ]] || exec sudo bash "$0" "$@"
+USER_NAME="${SUDO_USER:-kh}"
+
+# Safety net: ensure SDDM autologin into the Omarchy uwsm session exists.
+# (Normally already provided by Omarchy in /etc/sddm.conf.d/autologin.conf.)
+install -d -m755 /etc/sddm.conf.d
+if [[ ! -f /etc/sddm.conf.d/autologin.conf ]]; then
+    cat >/etc/sddm.conf.d/autologin.conf <<EOF
+[Autologin]
+User=$USER_NAME
+Session=omarchy.desktop
+EOF
+fi
+
+systemctl disable lightdm.service >/dev/null 2>&1 || true
+systemctl enable sddm.service >/dev/null
+
+echo "Next boot : SDDM -> Omarchy (Hyprland uwsm), autologin as $USER_NAME"
+echo "Enabled   : $(systemctl is-enabled sddm.service)"
+echo "Switch back any time with: use-xfce"
+read -r -p "Reboot now? [y/N] " ans || true
+if [[ "${ans:-}" =~ ^[Yy] ]]; then systemctl reboot; fi

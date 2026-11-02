@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Open URLs as a new TAB in the existing Google Chrome window instead of a new window.
+#
+# Why this exists: on Hyprland/Wayland, Chrome thinks it is "inactive" while
+# you are in another app, so every link clicked elsewhere makes Chrome spawn a
+# brand-new window. Focusing the browser window for a moment before handing
+# over the URL makes Chrome reuse that window and open the link as a tab.
+#
+# Installed as the Exec of ~/.local/share/applications/google-chrome.desktop
+# (user override of /usr/share/applications/google-chrome.desktop).
+
+set -u
+
+browser=/usr/bin/google-chrome-stable
+
+focus_browser_window() {
+  command -v hyprctl >/dev/null 2>&1 || return 1
+  # Works whether or not HYPRLAND_INSTANCE_SIGNATURE is in our environment.
+  [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} || -d /tmp/hypr ]] || return 1
+
+  # Pick the most recently focused main Chrome window (not PWA/app windows).
+  local address
+  address=$(hyprctl clients -j 2>/dev/null | jq -r '
+    [ .[] | select(.class == "google-chrome") ]
+    | sort_by(.focusHistoryID) | last
+    | .address // empty')
+  [[ -n $address ]] || return 1
+
+  # New Hyprland Lua dispatch syntax, with legacy fallback.
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 ||
+    hyprctl dispatch focuswindow "address:$address" >/dev/null 2>&1
+}
+
+if focus_browser_window; then
+  # Give Hyprland a moment to deliver the activation to Chrome before the
+  # URL arrives, so Chrome treats the focused window as its active window.
+  sleep 0.3
+fi
+
+exec "$browser" "$@"

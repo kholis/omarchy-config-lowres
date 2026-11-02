@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.kholis.gp-vpn",
+  "name": "GlobalProtect VPN",
+  "version": "1.0.0",
+  "author": "Nur Kholis Majid",
+  "license": "MIT",
+  "description": "GlobalProtect VPN status for the Omarchy bar: shield icon and elapsed connection time while the tunnel interface is up, hidden when disconnected. Click for connect/disconnect.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "GpVpn.qml"
+  },
+  "barWidget": {
+    "displayName": "GlobalProtect VPN",
+    "description": "VPN status with elapsed connection time; auto-hides when disconnected.",
+    "category": "Network",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "interface": "gpd0",
+      "portal": ""
+    },
+    "schema": [
+      {
+        "key": "interface",
+        "type": "string",
+        "label": "Tunnel interface",
+        "defaultValue": "gpd0"
+      },
+      {
+        "key": "portal",
+        "type": "string",
+        "label": "Portal hostname (for the Connect button)",
+        "defaultValue": ""
+      }
+    ]
+  }
+}

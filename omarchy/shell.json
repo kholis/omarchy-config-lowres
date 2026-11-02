@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "idle": {
+    "screensaver": 150,
+    "lock": 300
+  },
+  "bar": {
+    "position": "top",
+    "transparent": true,
+    "centerAnchor": "omarchy.clock",
+    "layout": {
+      "left": [
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "id": "omarchy.workspaces"
+        },
+        {
+          "id": "io.github.joeyvigil.taskbar",
+          "showAddButton": false
+        }
+      ],
+      "center": [
+        {
+          "id": "omarchy.indicators"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
+        },
+        {
+          "id": "omarchy.clock",
+          "format": "ddd d MMM yyyy HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "verticalFormat": "HH\n—\nmm"
+        },
+        {
+          "id": "omarchy.weather"
+        },
+        {
+          "id": "omarchy.system-update"
+        }
+      ],
+      "right": [
+        {
+          "id": "io.github.kholis.gp-vpn",
+          "interface": "gpd0",
+          "portal": ""
+        },
+        {
+          "id": "omarchy.agents"
+        },
+        {
+          "id": "omarchy.tray",
+          "pinned": [
+            "org.telegram.desktop"
+          ]
+        },
+        {
+          "id": "akitaonrails.ai-usagebar",
+          "hiddenBarEntries": [
+            "anthropic",
+            "openai",
+            "openrouter"
+          ]
+        },
+        {
+          "id": "artmins96.l2tp"
+        },
+        {
+          "id": "faperac.displays"
+        },
+        {
+          "id": "omarchy.bluetooth"
+        },
+        {
+          "id": "omarchy.network"
+        },
+        {
+          "id": "omarchy.audio"
+        },
+        {
+          "id": "omarchy.monitor"
+        },
+        {
+          "id": "omarchy.power"
+        }
+      ]
+    }
+  },
+  "plugins": [
+    {
+      "id": "kh.notifications"
+    }
+  ],
+  "disabledPlugins": [
+    "omarchy.notifications"
+  ],
+  "cloneSourceRestores": [
+    "kh.notifications"
+  ]
+}
